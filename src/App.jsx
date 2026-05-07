@@ -42,10 +42,17 @@ export default function App() {
     minStock: "",
   });
 
-  const loadProducts = async () => {
+const [session, setSession] = useState(null);
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+
+const loadProducts = async () => {
+  if (!session) return;
+
   const { data, error } = await supabase
     .from("products")
     .select("*")
+    .eq("user_id", session.user.id)
     .order("id");
 
   if (error) {
@@ -66,8 +73,39 @@ export default function App() {
 };
 
 useEffect(() => {
-  loadProducts();
+  if (session) {
+    loadProducts();
+  }
+}, [session]);
+
+useEffect(() => {
+  supabase.auth.getSession().then(({ data: { session } }) => {
+    setSession(session);
+  });
+
+  const {
+    data: { subscription },
+  } = supabase.auth.onAuthStateChange((_event, session) => {
+    setSession(session);
+  });
+
+  return () => subscription.unsubscribe();
 }, []);
+
+const signIn = async () => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email,
+    password,
+  });
+
+  if (error) {
+    alert(error.message);
+  }
+};
+
+const signOut = async () => {
+  await supabase.auth.signOut();
+};
 
   const cartTotal = cart.reduce((sum, item) => sum + item.total, 0);
   const cartCost = cart.reduce((sum, item) => sum + item.totalCost, 0);
@@ -149,6 +187,7 @@ useEffect(() => {
   }
 
   const newSales = cart.map((item) => ({
+    user_id: session.user.id,
     product_id: item.productId,
     product_name: item.productName,
     quantity: item.quantity,
@@ -189,6 +228,7 @@ useEffect(() => {
   if (!expenseForm.concept || amount <= 0) return;
 
   const { error } = await supabase.from("expenses").insert({
+    user_id: session.user.id,
     concept: expenseForm.concept,
     category: expenseForm.category,
     amount,
@@ -213,6 +253,7 @@ useEffect(() => {
   if (!productForm.name || Number(productForm.price) <= 0) return;
 
   const { error } = await supabase.from("products").insert({
+    user_id: session.user.id,
     name: productForm.name,
     price: Number(productForm.price),
     cost: Number(productForm.cost || 0),
@@ -237,6 +278,41 @@ useEffect(() => {
   await loadProducts();
 };
 
+if (!session) {
+  return (
+    <main style={styles.page}>
+      <section style={styles.card}>
+        <h1 style={{ color: "#111827" }}>
+          El Volcán POS
+        </h1>
+
+        <input
+          style={styles.input}
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+
+        <input
+          style={styles.input}
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+
+        <button
+          style={styles.checkoutButton}
+          onClick={signIn}
+        >
+          Entrar
+        </button>
+
+      </section>
+    </main>
+  );
+}
+
   return (
     <div style={styles.page}>
       <header style={styles.header}>
@@ -244,7 +320,12 @@ useEffect(() => {
           <h1 style={styles.title}>Punto de Venta Elotes</h1>
           <p style={styles.subtitle}>Caja rápida para celular</p>
         </div>
-        <span style={styles.badge}>El Volcán</span>
+        <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+  <span style={styles.badge}>El Volcán</span>
+  <button style={styles.smallButton} onClick={signOut}>
+    Salir
+  </button>
+</div>
       </header>
 
       <section style={styles.statsGrid}>
