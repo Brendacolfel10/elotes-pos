@@ -464,16 +464,25 @@ const tabButton = (active) => ({
 });
 
 const styles = {
-  page: { minHeight: '100vh', background: '#f1f5f9', padding: 12, paddingBottom: 96, fontFamily: 'Arial, sans-serif', color: '#111827' },
+  page: { minHeight: '100vh', background: '#f3f4f6', padding: 12, paddingBottom: 96, fontFamily: 'Arial, sans-serif', color: '#111827' },
   header: { background: '#fff', borderRadius: 24, padding: 16, display: 'flex', justifyContent: 'space-between', gap: 12, alignItems: 'center', boxShadow: '0 1px 4px rgba(0,0,0,.08)', marginBottom: 12 },
-  title: { margin: 0, fontSize: 24, lineHeight: 1.1 },
+  title: {
+  margin: 0,
+  fontSize: 24,
+  lineHeight: 1.1,
+  color: '#111827'
+},
   subtitle: { margin: '4px 0 0', color: '#64748b', fontSize: 14 },
   badge: { background: '#111827', color: '#fff', padding: '8px 12px', borderRadius: 999, fontWeight: 700, fontSize: 12 },
   statsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 12 },
   stat: { background: '#fff', borderRadius: 20, padding: 14, boxShadow: '0 1px 4px rgba(0,0,0,.06)' },
   mainGrid: { display: 'grid', gap: 12 },
   card: { background: '#fff', borderRadius: 24, padding: 16, boxShadow: '0 1px 4px rgba(0,0,0,.08)', marginBottom: 12 },
-  sectionTitle: { margin: '0 0 14px', fontSize: 20 },
+  sectionTitle: {
+  margin: '0 0 14px',
+  fontSize: 20,
+  color: '#111827'
+},
   productsGrid: { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 },
   productButton: {
   border: '1px solid #e2e8f0',
